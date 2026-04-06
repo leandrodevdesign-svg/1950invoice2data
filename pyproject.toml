@@ -105,6 +105,15 @@ web = [
 [tool.uv]
 package = true
 
+[tool.setuptools.package-data]
+invoice2data = [
+    "py.typed",
+    "web_templates/*.html",
+    "extract/templates/**/*.yml",
+    "extract/templates/**/*.yaml",
+    "extract/templates/**/*.json",
+]
+
 
 [project.scripts]
 invoice2data = "invoice2data.__main__:main"
