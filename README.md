@@ -52,6 +52,41 @@ Go from PDF files to this:
     {'date': (2014, 8, 3), 'invoice_number': '42183017', 'amount': 4.11, 'desc': 'Invoice 42183017 from Amazon Web Services'}
     {'date': (2015, 1, 28), 'invoice_number': '12429647', 'amount': 101.0, 'desc': 'Invoice 12429647 from Envato'}
 
+## Web Reviewer Demo
+
+This repository now also includes a lightweight web interface designed for
+non-technical invoice review workflows:
+
+- upload multiple PDF files in one batch
+- process them with the existing extraction engine
+- review the results in a table
+- download the output as CSV, JSON or Excel
+
+Run it locally with:
+
+```bash
+pip install ".[web]"
+uvicorn invoice2data.webapp:app --host 0.0.0.0 --port 8000
+```
+
+Then open `http://localhost:8000`.
+
+### Render Deployment
+
+The repository includes a `render.yaml` file for deploying the demo to Render.
+After pushing to GitHub, create a new Blueprint service in Render and select
+this repository. Render will install `.[web]` and start the app with Uvicorn.
+
+Environment variables you can customize:
+
+- `INVOICE2DATA_INPUT_READER`: defaults to `pdfminer` for a pure-Python PDF path
+- `INVOICE2DATA_TEMPLATE_FOLDER`: optional custom template folder
+- `INVOICE2DATA_EXCLUDE_BUILTIN`: set to `true` to ignore built-in templates
+
+This demo is best for text-based PDFs. If your invoices are scanned images, you
+will likely need OCR-specific dependencies and configuration before expecting
+good results.
+
 
 ## Usage
 

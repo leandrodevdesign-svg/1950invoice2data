@@ -7,6 +7,7 @@ from typing import Generator
 import pytest
 
 from invoice2data.extract.invoice_template import InvoiceTemplate
+from invoice2data.extract.loader import get_builtin_template_folder
 from invoice2data.extract.loader import ordered_load
 from invoice2data.extract.loader import read_templates
 
@@ -31,6 +32,12 @@ def test_default_templates_are_loaded() -> None:
     print("Amount of template files %s" % qty_templ_files)
     assert len(templates) == qty_templ_files
     assert all(isinstance(template, InvoiceTemplate) for template in templates)
+
+
+def test_builtin_template_folder_is_absolute() -> None:
+    folder = get_builtin_template_folder()
+    assert os.path.isabs(folder)
+    assert os.path.isdir(folder)
 
 
 def test_templates_stream_loader() -> None:

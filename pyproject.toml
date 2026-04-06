@@ -93,6 +93,14 @@ ocrmypdf = ["ocrmypdf >= 14.4.0"]
 pdfminer-six = ["pdfminer-six == 20231228"]
 pdfplumber = ["pdfplumber == 0.11.4"]
 pyyaml = ["pyyaml == 6.0.2"]
+web = [
+    "fastapi >= 0.115.0",
+    "Jinja2 >= 3.1.4",
+    "openpyxl >= 3.1.5",
+    "pdfminer-six == 20231228",
+    "python-multipart >= 0.0.9",
+    "uvicorn >= 0.30.6",
+]
 
 [tool.uv]
 package = true
@@ -100,6 +108,7 @@ package = true
 
 [project.scripts]
 invoice2data = "invoice2data.__main__:main"
+invoice2data-web = "invoice2data.webapp:main"
 
 [tool.coverage.paths]
 source = ["src", "*\\src", "*/site-packages"]

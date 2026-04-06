@@ -7,6 +7,7 @@ import codecs
 import json
 import os
 from logging import getLogger
+from pathlib import Path
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -28,6 +29,11 @@ from .invoice_template import InvoiceTemplate  # type: ignore[unused-ignore]
 
 
 logger = getLogger(__name__)
+
+
+def get_builtin_template_folder() -> str:
+    """Return the absolute path to the built-in template directory."""
+    return str(Path(__file__).resolve().parent / "templates")
 
 
 def ordered_load(
@@ -80,7 +86,7 @@ def read_templates(folder: Optional[str] = None) -> List[InvoiceTemplate]:
     """
     output = []
     if folder is None:
-        folder = "./src/invoice2data/extract/templates"
+        folder = get_builtin_template_folder()
     else:
         folder = os.path.abspath(folder)
 

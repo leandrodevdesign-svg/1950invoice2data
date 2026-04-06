@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Revisión de Facturas</title>
+    <style>
+      :root {
+        --bg: #f5efe5;
+        --panel: rgba(255, 252, 246, 0.92);
+        --ink: #1d2433;
+        --muted: #5c667a;
+        --accent: #0c6b58;
+        --accent-2: #d98f3d;
+        --ok: #dff3e9;
+        --warn: #fff0cf;
+        --error: #f7d8d7;
+        --line: rgba(29, 36, 51, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(217, 143, 61, 0.22), transparent 32%),
+          radial-gradient(circle at top right, rgba(12, 107, 88, 0.18), transparent 28%),
+          linear-gradient(180deg, #f9f4eb 0%, var(--bg) 100%);
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 32px auto 48px;
+      }
+
+      .hero,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 16px 50px rgba(29, 36, 51, 0.08);
+      }
+
+      .hero {
+        padding: 28px;
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .panel {
+        padding: 24px;
+      }
+
+      .upload-form {
+        display: grid;
+        gap: 16px;
+      }
+
+      .dropzone {
+        border: 2px dashed rgba(12, 107, 88, 0.35);
+        border-radius: 20px;
+        padding: 28px;
+        background: rgba(12, 107, 88, 0.05);
+      }
+
+      .dropzone input {
+        display: block;
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      button,
+      .download-link {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 13px 18px;
+        background: var(--ink);
+        color: white;
+        font: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .download-link.secondary {
+        background: white;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .hint {
+        font-size: 0.95rem;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .stat {
+        border-radius: 18px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        background: white;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 1.7rem;
+      }
+
+      .flash {
+        margin-bottom: 16px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--warn);
+        border: 1px solid rgba(217, 143, 61, 0.28);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      th {
+        position: sticky;
+        top: 0;
+        background: #fffaf3;
+      }
+
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: white;
+      }
+
+      .status-ok {
+        background: var(--ok);
+      }
+
+      .status-sin_coincidencia {
+        background: var(--warn);
+      }
+
+      .status-error {
+        background: var(--error);
+      }
+
+      .download-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 16px 0 18px;
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          width: min(100% - 20px, 1120px);
+          margin: 16px auto 28px;
+        }
+
+        .hero,
+        .panel {
+          padding: 18px;
+          border-radius: 18px;
+        }
+
+        h1 {
+          font-size: 2.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <h1>Sube tus PDFs y revísalos en una tabla</h1>
+        <p>
+          Esta demo procesa varios comprobantes a la vez con <code>{{ input_reader }}</code>,
+          arma una lista revisable y te deja descargar el resultado en CSV, Excel o JSON.
+        </p>
+      </section>
+
+      <section class="panel">
+        {% if error %}
+        <div class="flash">{{ error }}</div>
+        {% endif %}
+
+        <form class="upload-form" action="/extract" method="post" enctype="multipart/form-data">
+          <label class="dropzone">
+            <strong>Selecciona uno o varios archivos PDF</strong>
+            <p class="hint">Puedes subir lotes para revisar nombre, horas, monto y otros campos detectados.</p>
+            <input type="file" name="files" accept=".pdf" multiple required>
+          </label>
+
+          <div class="button-row">
+            <button type="submit">Procesar facturas</button>
+            <span class="hint">Consejo: empieza con 5 a 10 PDFs reales para medir si el formato sale bien.</span>
+          </div>
+        </form>
+      </section>
+
+      {% if results %}
+      <section class="panel" style="margin-top: 18px;">
+        <div class="summary">
+          <div class="stat">
+            <span>Total</span>
+            <strong>{{ summary.total }}</strong>
+          </div>
+          <div class="stat">
+            <span>Correctos</span>
+            <strong>{{ summary.ok }}</strong>
+          </div>
+          <div class="stat">
+            <span>Sin coincidencia</span>
+            <strong>{{ summary.sin_coincidencia }}</strong>
+          </div>
+          <div class="stat">
+            <span>Errores</span>
+            <strong>{{ summary.error }}</strong>
+          </div>
+        </div>
+
+        <div class="download-bar">
+          <a class="download-link" href="/downloads/{{ download_id }}/xlsx">Descargar Excel</a>
+          <a class="download-link secondary" href="/downloads/{{ download_id }}/csv">Descargar CSV</a>
+          <a class="download-link secondary" href="/downloads/{{ download_id }}/json">Descargar JSON</a>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                {% for column in columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in results %}
+              <tr class="status-{{ row.get('status', '') }}">
+                {% for column in columns %}
+                <td>{{ row.get(column, "") }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      {% endif %}
+    </main>
+  </body>
+</html>

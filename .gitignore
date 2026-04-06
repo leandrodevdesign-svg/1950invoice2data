@@ -73,3 +73,7 @@ target/
 /dist/
 /docs/_build/
 /src/*.egg-info/
+test_area.json
+test_compare.json
+test_compare.xml
+tests/copy_test/

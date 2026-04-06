@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: invoice2data-reviewer
+    runtime: python
+    plan: starter
+    buildCommand: pip install ".[web]"
+    startCommand: uvicorn invoice2data.webapp:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: INVOICE2DATA_INPUT_READER
+        value: pdfminer

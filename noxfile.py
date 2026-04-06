@@ -192,6 +192,8 @@ def tests(session: nox.Session) -> None:
         "pdfplumber",
         "--extra",
         "pyyaml",
+        "--extra",
+        "web",
         env={"UV_PROJECT_ENVIRONMENT": session.virtualenv.location},
     )
     session.run(

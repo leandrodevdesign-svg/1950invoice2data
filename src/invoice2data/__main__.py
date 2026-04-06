@@ -263,7 +263,7 @@ def extract_data_fallback_ocrmypdf(
 )
 @click.argument(
     "input_files",
-    type=click.File("wb"),
+    type=click.File("rb"),
     nargs=-1,
 )
 @click.version_option()
